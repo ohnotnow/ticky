@@ -150,7 +150,8 @@
         {"from": "user", "content": "Ticket text", "created_at": "2024-02-01T12:34:56Z"},
         {
           "from": "assistant",
-          "content": "{\"recommendations\":[...]}",
+          "content": null,
+          "raw_response": "{\"recommendations\":[...]}",
           "recommendations": [{"team": "Service Desk", "person": "Alex Smith", "confidence": 9, "reasoning": "Handles print issues"}],
           "created_at": "2024-02-01T12:35:10Z"
         }
@@ -216,7 +217,8 @@ print(conversations)</code></pre>
         {'from': 'user', 'content': 'Ticket text', 'created_at': '2024-02-01T12:34:56Z'},
         {
           'from': 'assistant',
-          'content': '{"recommendations":[...]}',
+          'content': None,
+          'raw_response': '{"recommendations":[...]}',
           'recommendations': [{'team': 'Service Desk', 'person': 'Alex Smith', 'confidence': 9, 'reasoning': 'Handles print issues'}],
           'created_at': '2024-02-01T12:35:10Z'
         }
