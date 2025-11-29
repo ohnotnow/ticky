@@ -13,6 +13,8 @@ uses(RefreshDatabase::class);
 it('paginates conversations and shows newest first', function (): void {
     $user = User::factory()->create();
 
+    $conversationIds = [];
+
     for ($i = 0; $i < 12; $i++) {
         $createdAt = Carbon::now()->subMinutes($i);
 
@@ -21,6 +23,8 @@ it('paginates conversations and shows newest first', function (): void {
             'created_at' => $createdAt,
             'updated_at' => $createdAt,
         ]);
+
+        $conversationIds[] = $conversation->id;
 
         Message::factory()->create([
             'conversation_id' => $conversation->id,
@@ -42,7 +46,11 @@ it('paginates conversations and shows newest first', function (): void {
         ->assertViewHas('conversations', fn ($paginator) => $paginator->hasPages())
         ->call('gotoPage', 2)
         ->assertSee('Ticket 5')
-        ->assertDontSee('Ticket 0');
+        ->assertDontSee('Ticket 0')
+        ->call('openConversation', $conversationIds[0])
+        ->assertSet('showConversation', true)
+        ->assertSee('Conversation #'.$conversationIds[0])
+        ->assertSee('Ticket 0');
 
     Livewire::test(HomePage::class)
         ->set('perPage', 5)

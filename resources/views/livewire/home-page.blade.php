@@ -18,7 +18,10 @@
                 @php
                     $firstMessage = $conversation->messages->sortBy('created_at')->first();
                 @endphp
-                <flux:card>
+                <flux:card
+                    class="cursor-pointer"
+                    wire:click="openConversation({{ $conversation->id }})"
+                >
                     <div class="flex items-start justify-between gap-4">
                         <div class="space-y-1">
                             <flux:heading size="md" level="2">Conversation #{{ $conversation->id }}</flux:heading>
@@ -35,4 +38,55 @@
             <flux:pagination :paginator="$conversations" class="pt-2" />
         </div>
     @endif
+
+    <flux:modal
+        wire:model="showConversation"
+        variant="flyout"
+        class="md:w-xl"
+        position="right"
+        :dismissible="true"
+    >
+        <div class="space-y-4">
+            <div class="flex items-start justify-between">
+                <div class="space-y-1">
+                    <flux:heading size="lg">
+                        Conversation #{{ $activeConversation?->id }}
+                    </flux:heading>
+                    @if ($activeConversation)
+                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                            Started {{ $activeConversation->created_at->diffForHumans() }}
+                        </flux:text>
+                    @endif
+                </div>
+                <flux:modal.close>
+                    <flux:button variant="ghost" icon="x-mark" class="cursor-pointer" />
+                </flux:modal.close>
+            </div>
+
+            <div class="space-y-3">
+                @forelse ($activeMessages as $message)
+                    <flux:callout
+                        :variant="$message['from'] === 'You' ? 'subtle' : 'secondary'"
+                        :heading="$message['from']"
+                        icon="{{ $message['from'] === 'You' ? 'user' : 'sparkles' }}"
+                    >
+                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ $message['at']->diffForHumans() }}
+                        </flux:text>
+                        <flux:text class="mt-2 whitespace-pre-wrap">
+                            {{ $message['content'] }}
+                        </flux:text>
+                    </flux:callout>
+                @empty
+                    <flux:text>No messages in this conversation yet.</flux:text>
+                @endforelse
+            </div>
+
+            <div class="flex justify-end">
+                <flux:modal.close>
+                    <flux:button variant="primary" class="cursor-pointer">Close</flux:button>
+                </flux:modal.close>
+            </div>
+        </div>
+    </flux:modal>
 </div>
