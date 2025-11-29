@@ -1,8 +1,15 @@
-@php use Illuminate\Support\Str; @endphp
-
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-4">
         <flux:heading size="xl" level="1">Ticky</flux:heading>
+
+        <div class="flex-1 flex justify-center max-w-sm">
+                <flux:input
+                    wire:model.live="filter"
+                    placeholder="Search conversations…"
+                    icon="magnifying-glass"
+                />
+        </div>
+
         <flux:button tag="a" href="{{ route('triage') }}" variant="primary" icon="paper-airplane" wire:navigate class="cursor-pointer">
             Triage ticket
         </flux:button>

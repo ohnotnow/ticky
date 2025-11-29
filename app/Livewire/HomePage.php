@@ -17,6 +17,8 @@ class HomePage extends Component
 
     public int $page = 1;
 
+    public string $filter = '';
+
     public bool $showConversation = false;
 
     public ?Conversation $activeConversation = null;
@@ -53,11 +55,19 @@ class HomePage extends Component
         $this->reset(['showConversation', 'activeConversation', 'activeMessages']);
     }
 
+    public function updatingFilter(): void
+    {
+        $this->resetPage();
+    }
+
     public function render(): View
     {
         $conversations = Conversation::query()
             ->with(['messages' => fn ($query) => $query->oldest()->limit(1)])
             ->where('user_id', Auth::id())
+            ->when($this->filter, fn ($query) => $query->whereHas('messages', function ($messageQuery) {
+                $messageQuery->where('content', 'like', '%'.$this->filter.'%');
+            }))
             ->latest()
             ->paginate($this->perPage);
 
