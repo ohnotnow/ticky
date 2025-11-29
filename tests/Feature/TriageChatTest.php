@@ -28,7 +28,7 @@ it('sends a prompt and shows the llm response', function (): void {
     Livewire::test(TriageChat::class)
         ->set('prompt', 'The GPU node is failing jobs')
         ->call('send')
-        ->assertSet('response', $llmResponse)
+        ->assertSet('ticketRuns.0.response', $llmResponse)
         ->assertSee('College Infrastructure')
         ->assertSee('Primary Recommendation');
 

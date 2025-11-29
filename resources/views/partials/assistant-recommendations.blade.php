@@ -1,5 +1,11 @@
-@if (count($recommendations))
-    <div class="space-y-3">
+<div class="space-y-3">
+    @isset($prompt)
+        <flux:callout color="teal" icon="user" heading="Ticket">
+            <flux:text class="whitespace-pre-wrap">{{ $prompt }}</flux:text>
+        </flux:callout>
+    @endisset
+
+    @if (count($recommendations))
         @foreach ($recommendations as $index => $recommendation)
             <flux:callout
                 :variant="$index === 0 ? 'success' : 'secondary'"
@@ -14,5 +20,10 @@
                 </div>
             </flux:callout>
         @endforeach
-    </div>
-@endif
+    @else
+        <flux:card>
+            <flux:heading size="md" level="2">LLM response</flux:heading>
+            <pre class="mt-3 whitespace-pre-wrap font-mono text-sm">{{ $response ?? '' }}</pre>
+        </flux:card>
+    @endif
+</div>

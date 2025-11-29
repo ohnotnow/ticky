@@ -11,13 +11,12 @@ use Livewire\Component;
 
 class TriageChat extends Component
 {
-    public ?Conversation $conversation = null;
+    /**
+     * Holds the results for each ticket in the current submission.
+     */
+    public array $ticketRuns = [];
 
     public string $prompt = '';
-
-    public ?string $response = null;
-
-    public array $recommendations = [];
 
     protected LlmService $llmService;
 
@@ -32,31 +31,54 @@ class TriageChat extends Component
             'prompt' => ['required', 'string'],
         ]);
 
-        if (! $this->conversation) {
-            $this->conversation = Conversation::create([
-                'user_id' => Auth::id(),
-            ]);
+        $tickets = $this->extractTickets($this->prompt);
+
+        $this->ticketRuns = [];
+
+        foreach ($tickets as $ticket) {
+            $this->ticketRuns[] = $this->processTicket($ticket);
         }
 
-        $this->conversation->messages()->create([
+        $this->prompt = '';
+    }
+
+    protected function extractTickets(string $prompt): array
+    {
+        return collect(preg_split('/^---$/m', $prompt))
+            ->map(fn (string $ticket): string => trim($ticket))
+            ->filter(fn (string $ticket): bool => $ticket !== '')
+            ->values()
+            ->all();
+    }
+
+    protected function processTicket(string $ticket): array
+    {
+        $conversation = Conversation::create([
             'user_id' => Auth::id(),
-            'content' => $this->prompt,
         ]);
 
-        $messages = $this->conversation
+        $conversation->messages()->create([
+            'user_id' => Auth::id(),
+            'content' => $ticket,
+        ]);
+
+        $messages = $conversation
             ->messages()
             ->oldest()
             ->get();
 
-        $this->response = $this->llmService->generateResponse($this->conversation, $messages);
+        $response = $this->llmService->generateResponse($conversation, $messages);
 
-        $this->conversation->messages()->create([
-            'content' => $this->response,
+        $conversation->messages()->create([
+            'content' => $response,
         ]);
 
-        $this->recommendations = Message::recommendationsFromContent($this->response);
-
-        $this->prompt = '';
+        return [
+            'conversation_id' => $conversation->id,
+            'prompt' => $ticket,
+            'response' => $response,
+            'recommendations' => Message::recommendationsFromContent($response),
+        ];
     }
 
     public function render(): View

@@ -13,7 +13,7 @@
             wire:model.live="prompt"
             label="Prompt"
             label:sr-only
-            placeholder="How can I help you today?"
+            placeholder="Paste one or more tickets. Separate multiple tickets with --- on its own line."
         >
             <x-slot name="actionsLeading">
                 <flux:button size="sm" variant="subtle" icon="paper-clip" />
@@ -29,12 +29,13 @@
         </flux:composer>
     </form>
 
-    @if (count($recommendations))
-        @include('partials.assistant-recommendations', ['recommendations' => $recommendations])
-    @elseif ($response)
-        <flux:card>
-            <flux:heading size="md" level="2">LLM response</flux:heading>
-            <pre class="mt-3 whitespace-pre-wrap font-mono text-sm">{{ $response }}</pre>
-        </flux:card>
-    @endif
+    @foreach ($ticketRuns as $ticketRun)
+        <div wire:key="ticket-run-{{ $ticketRun['conversation_id'] }}" class="space-y-3">
+            @include('partials.assistant-recommendations', [
+                'prompt' => $ticketRun['prompt'],
+                'recommendations' => $ticketRun['recommendations'],
+                'response' => $ticketRun['response'],
+            ])
+        </div>
+    @endforeach
 </div>
