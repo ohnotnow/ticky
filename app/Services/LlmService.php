@@ -23,7 +23,7 @@ class LlmService
      */
     public function generateResponse(Conversation $conversation, Collection $messages, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null): string
     {
-        [$provider, $model] = $this->parseProviderAndModel($useSmallModel);
+        [$provider, $model] = $this->parseProviderAndModel();
 
         $systemPrompt = $systemPrompt ?? $this->renderChatPrompt($conversation);
         $prismMessages = $this->convertToPrismMessages($messages);

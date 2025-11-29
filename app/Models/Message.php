@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Message extends Model
 {
@@ -27,12 +27,12 @@ class Message extends Model
         return $this->belongsTo(User::class);
     }
 
-    function isFromUser(): bool
+    public function isFromUser(): bool
     {
         return $this->user_id !== null;
     }
 
-    function isFromAssistant(): bool
+    public function isFromAssistant(): bool
     {
         return $this->user_id === null;
     }
