@@ -94,6 +94,100 @@ lando mfs  # Migrate and seed the database
 - `resources/views/prompts/` - LLM prompt templates
 - `resources/views/partials/` - Shared view partials
 
+## API
+
+Ticky provides a REST API for programmatic access, protected by Laravel Sanctum tokens.
+
+### Managing API Tokens
+
+Navigate to **API Keys** in the sidebar to create and revoke tokens. Admin users can view and manage all tokens; regular users see only their own.
+
+### Endpoints
+
+#### Submit Tickets for Triage
+
+```bash
+curl -X POST https://ticky.lndo.site/api/v1/triage \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"tickets": ["Printer is jammed", "VPN is down"]}'
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "conversation_id": 456,
+      "ticket": "Printer is jammed",
+      "recommendations": [
+        {
+          "team": "Service Desk",
+          "person": "Alex Smith",
+          "confidence": 9,
+          "reasoning": "Handles print issues"
+        }
+      ],
+      "raw_response": "{\"recommendations\":[...]}"
+    },
+    {
+      "conversation_id": 457,
+      "ticket": "VPN is down",
+      "recommendations": [],
+      "raw_response": "Assistant text if no recommendations found"
+    }
+  ]
+}
+```
+
+Each ticket creates a new conversation with isolated LLM context. The `recommendations` array contains parsed suggestions; `raw_response` always contains the full LLM output.
+
+#### List Conversations
+
+```bash
+curl https://ticky.lndo.site/api/v1/conversations \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Accept: application/json"
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 123,
+      "created_at": "2024-02-01T12:34:56Z",
+      "messages": [
+        {
+          "from": "user",
+          "content": "Ticket text",
+          "raw_response": null,
+          "recommendations": [],
+          "created_at": "2024-02-01T12:34:56Z"
+        },
+        {
+          "from": "assistant",
+          "content": null,
+          "raw_response": "{\"recommendations\":[...]}",
+          "recommendations": [
+            {
+              "team": "Service Desk",
+              "person": "Alex Smith",
+              "confidence": 9,
+              "reasoning": "Handles print issues"
+            }
+          ],
+          "created_at": "2024-02-01T12:35:10Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Returns only the authenticated user's conversations. User messages have `content`; assistant messages have `raw_response` and parsed `recommendations`.
+
 ## Configuration
 
 The org chart and LLM settings live in `config/ticky.php`. You can customise:
