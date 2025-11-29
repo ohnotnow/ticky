@@ -1,7 +1,14 @@
-This is an initial proof of concept for a laravel/livewire app which lets an IT support person give a support ticket
-to an LLM, which is then also given a triage prompt and the organisation structure and staff/skills and is asked who
-the ticket should be assigned to.
+Proof of concept: Laravel 12 + Livewire 3 + Flux UI. Purpose: IT support can submit a ticket to an LLM for routing, using an org/staff chart and a triage prompt to suggest the best team/person.
 
-I have sketched out the basic core models, created a basic PoC config file in config/ticky.php.
+What’s implemented
+- Core models: Conversation, Message; config `config/ticky.php` holds org chart, LLM model, token limits.
+- LLM service: `App\Services\LlmService` uses Prism for provider-agnostic calls; triage prompt lives in `resources/views/prompts/triage.blade.php`.
+- Triage flow: `/triage` page (Livewire `TriageChat`) uses `flux:composer` to send a prompt, stores messages, calls LLM, and renders recommendations via shared partial (`resources/views/partials/assistant-recommendations.blade.php`).
+- Home/dashboard: `/` (Livewire `HomePage`) lists user conversations with pagination, search filter (message content LIKE), and flyout modal to view full conversation with parsed recommendations.
+- UI: Base layout at `resources/views/components/layouts/app.blade.php`, Flux components throughout, modals/pagination wired.
+- Test data: `TestDataSeeder` seeds admin and realistic sample conversations + assistant JSON responses based on org chart.
+- Tests: Feature coverage for triage/LLM flow and home pagination/filtering; Prism faked in tests.
 
-The front-end will be full-page livewire components (we already have the base layout in resources/views/components/layouts/app.blade.php).  We will be using the FluxUI component library for the frond-end components.
+Open next steps / ideas
+- Phase 2: true multi-turn chat/history, optional small-model toggle.
+- Maybe add sidebar links to home/triage, polish UX, and expose per-page setting if needed.
