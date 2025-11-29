@@ -11,7 +11,7 @@ use Livewire\Component;
 
 class TriageChat extends Component
 {
-    public Conversation $conversation;
+    public ?Conversation $conversation = null;
 
     public string $prompt = '';
 
@@ -26,18 +26,17 @@ class TriageChat extends Component
         $this->llmService = $llmService;
     }
 
-    public function mount(): void
-    {
-        $this->conversation = Conversation::create([
-            'user_id' => Auth::id(),
-        ]);
-    }
-
     public function send(): void
     {
         $this->validate([
             'prompt' => ['required', 'string'],
         ]);
+
+        if (! $this->conversation) {
+            $this->conversation = Conversation::create([
+                'user_id' => Auth::id(),
+            ]);
+        }
 
         $this->conversation->messages()->create([
             'user_id' => Auth::id(),
