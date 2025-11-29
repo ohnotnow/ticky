@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -18,8 +19,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
+        'surname',
+        'forenames',
+        'is_staff',
+        'is_admin',
         'password',
     ];
 
@@ -43,6 +48,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_staff' => 'boolean',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
     }
 }
