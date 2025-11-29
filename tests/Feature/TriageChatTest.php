@@ -34,6 +34,7 @@ it('sends a prompt and shows the llm response', function (): void {
 
     expect(Conversation::count())->toBe(1);
     expect(Message::count())->toBe(2);
+    expect(Message::query()->whereNull('user_id')->count())->toBe(1);
 
     $assistantMessage = Message::query()->whereNull('user_id')->first();
 
