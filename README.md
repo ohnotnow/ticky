@@ -4,6 +4,8 @@ Ticky is a proof-of-concept application that helps IT support staff route ticket
 
 The app uses an org chart configuration (teams, members, and their skills) combined with a triage prompt to query a large language model. The LLM returns routing recommendations with confidence scores and reasoning, helping support staff make informed decisions about who should handle each ticket.
 
+![Screenshot](screenshot.png)
+
 ## Features
 
 - Submit support tickets for AI-powered routing analysis
