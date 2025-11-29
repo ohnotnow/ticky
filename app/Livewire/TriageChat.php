@@ -16,6 +16,8 @@ class TriageChat extends Component
 
     public ?string $response = null;
 
+    public array $recommendations = [];
+
     protected LlmService $llmService;
 
     public function boot(LlmService $llmService): void
@@ -51,6 +53,13 @@ class TriageChat extends Component
         $this->conversation->messages()->create([
             'content' => $this->response,
         ]);
+
+        $decoded = json_decode($this->response, true);
+
+        $this->recommendations = collect($decoded['recommendations'] ?? [])
+            ->sortByDesc('confidence')
+            ->values()
+            ->all();
 
         $this->prompt = '';
     }
