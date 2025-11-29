@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 class Message extends Model
 {
@@ -35,5 +36,37 @@ class Message extends Model
     public function isFromAssistant(): bool
     {
         return $this->user_id === null;
+    }
+
+    /**
+     * Extract recommendations from the message content for display.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function recommendationsForView(): array
+    {
+        return self::recommendationsFromContent($this->content);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public static function recommendationsFromContent(?string $content): array
+    {
+        if (! $content) {
+            return [];
+        }
+
+        $decoded = json_decode($content, true);
+
+        if (! is_array($decoded) || ! isset($decoded['recommendations']) || ! is_array($decoded['recommendations'])) {
+            return [];
+        }
+
+        return Collection::make($decoded['recommendations'])
+            ->filter(fn ($item) => is_array($item))
+            ->sortByDesc('confidence')
+            ->values()
+            ->all();
     }
 }

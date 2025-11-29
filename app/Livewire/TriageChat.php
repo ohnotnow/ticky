@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Conversation;
+use App\Models\Message;
 use App\Services\LlmService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -54,12 +55,7 @@ class TriageChat extends Component
             'content' => $this->response,
         ]);
 
-        $decoded = json_decode($this->response, true);
-
-        $this->recommendations = collect($decoded['recommendations'] ?? [])
-            ->sortByDesc('confidence')
-            ->values()
-            ->all();
+        $this->recommendations = Message::recommendationsFromContent($this->response);
 
         $this->prompt = '';
     }

@@ -65,18 +65,30 @@
 
             <div class="space-y-3">
                 @forelse ($activeMessages as $message)
-                    <flux:callout
-                        :variant="$message['from'] === 'You' ? 'subtle' : 'secondary'"
-                        :heading="$message['from']"
-                        icon="{{ $message['from'] === 'You' ? 'user' : 'sparkles' }}"
-                    >
-                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $message['at']->diffForHumans() }}
-                        </flux:text>
-                        <flux:text class="mt-2 whitespace-pre-wrap">
-                            {{ $message['content'] }}
-                        </flux:text>
-                    </flux:callout>
+                    @php
+                        $hasRecommendations = isset($message['recommendations']) && count($message['recommendations']);
+                    @endphp
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <flux:heading size="sm">{{ $message['from'] }}</flux:heading>
+                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ $message['at']->diffForHumans() }}
+                            </flux:text>
+                        </div>
+
+                        @if ($hasRecommendations)
+                            @include('partials.assistant-recommendations', ['recommendations' => $message['recommendations']])
+                        @else
+                            <flux:callout
+                                :variant="$message['from'] === 'You' ? 'subtle' : 'secondary'"
+                                icon="{{ $message['from'] === 'You' ? 'user' : 'sparkles' }}"
+                            >
+                                <flux:text class="whitespace-pre-wrap">
+                                    {{ $message['content'] }}
+                                </flux:text>
+                            </flux:callout>
+                        @endif
+                    </div>
                 @empty
                     <flux:text>No messages in this conversation yet.</flux:text>
                 @endforelse

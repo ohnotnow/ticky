@@ -30,22 +30,7 @@
     </form>
 
     @if (count($recommendations))
-        <div class="space-y-3">
-            @foreach ($recommendations as $index => $recommendation)
-                <flux:callout
-                    :variant="$index === 0 ? 'success' : 'secondary'"
-                    :icon="$index === 0 ? 'check-circle' : 'information-circle'"
-                    :heading="$index === 0 ? 'Primary Recommendation' : 'Recommendation ' . ($index + 1)"
-                >
-                    <div class="space-y-1">
-                        <flux:text class="font-semibold">Team: {{ $recommendation['team'] ?? 'Unknown' }}</flux:text>
-                        <flux:text>Person: <b>{{ $recommendation['person'] ?? 'Unspecified' }}</b></flux:text>
-                        <flux:text>Confidence: <b>{{ $recommendation['confidence'] ?? 'N/A' }}/10</b></flux:text>
-                        <flux:text>{{ $recommendation['reasoning'] ?? 'No reasoning provided.' }}</flux:text>
-                    </div>
-                </flux:callout>
-            @endforeach
-        </div>
+        @include('partials.assistant-recommendations', ['recommendations' => $recommendations])
     @elseif ($response)
         <flux:card>
             <flux:heading size="md" level="2">LLM response</flux:heading>

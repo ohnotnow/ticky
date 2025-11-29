@@ -41,6 +41,7 @@ class HomePage extends Component
                 'from' => $message->isFromUser() ? 'You' : 'Assistant',
                 'content' => $message->content,
                 'at' => $message->created_at,
+                'recommendations' => $message->recommendationsForView(),
             ])
             ->all();
 
