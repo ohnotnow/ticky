@@ -32,6 +32,7 @@
                     </div>
                 </flux:card>
             @endforeach
+            <flux:pagination :paginator="$conversations" class="pt-2" />
         </div>
     @endif
 </div>
