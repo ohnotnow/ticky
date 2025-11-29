@@ -58,3 +58,35 @@ it('paginates conversations and shows newest first', function (): void {
         ->assertSee('Ticket 11')
         ->assertDontSee('Ticket 0');
 });
+
+it('filters conversations by message content', function (): void {
+    $user = User::factory()->create();
+
+    $linuxConversation = Conversation::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    Message::factory()->create([
+        'conversation_id' => $linuxConversation->id,
+        'user_id' => $user->id,
+        'content' => 'Linux server issue with MATLAB',
+    ]);
+
+    $otherConversation = Conversation::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    Message::factory()->create([
+        'conversation_id' => $otherConversation->id,
+        'user_id' => $user->id,
+        'content' => 'Printer jam on level 2',
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(HomePage::class)
+        ->set('filter', 'linux')
+        ->assertSee('Linux server issue')
+        ->assertDontSee('Printer jam')
+        ->assertViewHas('conversations', fn ($paginator) => $paginator->total() === 1);
+});
