@@ -5,6 +5,11 @@ return [
         "openai" => env('OPENAI_API_KEY'),
         "anthropic" => env('ANTHROPIC_API_KEY'),
     ],
+    'max_tokens' => [
+        'default' => 100000,
+        'small' => 10000,
+    ],
+    'llm_model' => env('LLM_MODEL', 'openai/gpt-5.1'),
     "org_chart" => [
         'organisation_name' => 'University of Somewhere - College of Science & Engineering IT',
         'teams' => [

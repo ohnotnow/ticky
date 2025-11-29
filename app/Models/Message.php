@@ -26,4 +26,14 @@ class Message extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    function isFromUser(): bool
+    {
+        return $this->user_id !== null;
+    }
+
+    function isFromAssistant(): bool
+    {
+        return $this->user_id === null;
+    }
 }

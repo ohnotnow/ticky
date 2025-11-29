@@ -28,7 +28,7 @@ class LlmService
         $systemPrompt = $systemPrompt ?? $this->renderChatPrompt($conversation);
         $prismMessages = $this->convertToPrismMessages($messages);
 
-        $maxTokens = $maxTokens ?? config('reqqy.max_tokens.default', 100000);
+        $maxTokens = $maxTokens ?? config('ticky.max_tokens.default', 100000);
 
         $response = Prism::text()
             ->using($provider, $model)
@@ -45,8 +45,9 @@ class LlmService
      */
     protected function renderChatPrompt(Conversation $conversation): string
     {
-        return View::make('prompts.chat3', [
-            'conversation' => $conversation->load('application', 'user.memory'),
+        return View::make('prompts.triage', [
+            'conversation' => $conversation->load('user'),
+            'org_chart' => config('ticky.org_chart'),
         ])->render();
     }
 
@@ -57,15 +58,9 @@ class LlmService
      *
      * @throws InvalidArgumentException
      */
-    protected function parseProviderAndModel(bool $useSmallModel = false): array
+    protected function parseProviderAndModel(): array
     {
-        $configKey = $useSmallModel ? 'reqqy.llm.small' : 'reqqy.llm.default';
-        $llmConfig = config($configKey);
-
-        if (empty($llmConfig)) {
-            $envVar = $useSmallModel ? 'REQQY_LLM_SMALL' : 'REQQY_LLM';
-            throw new InvalidArgumentException("LLM configuration is not set. Please set {$envVar} in your .env file.");
-        }
+        $llmConfig = config('ticky.llm_model');
 
         if (! str_contains($llmConfig, '/')) {
             throw new InvalidArgumentException('LLM configuration must be in the format "provider/model" (e.g., "anthropic/claude-3-5-sonnet").');
