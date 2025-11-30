@@ -26,7 +26,7 @@ class LlmService
         [$provider, $model] = $this->parseProviderAndModel();
 
         $systemPrompt = $systemPrompt ?? $this->renderChatPrompt($conversation);
-        $prismMessages = $this->convertToPrismMessages($messages);
+        $prismMessages = $conversation->toPrismMessages();
 
         $maxTokens = $maxTokens ?? config('ticky.max_tokens.default', 100000);
 
@@ -63,7 +63,7 @@ class LlmService
         $llmConfig = config('ticky.llm_model');
 
         if (! str_contains($llmConfig, '/')) {
-            throw new InvalidArgumentException('LLM configuration must be in the format "provider/model" (e.g., "anthropic/claude-3-5-sonnet").');
+            throw new InvalidArgumentException('LLM configuration must be in the format "provider/model" (e.g., "openai/gpt-5.1").');
         }
 
         [$providerName, $model] = explode('/', $llmConfig, 2);
@@ -76,22 +76,5 @@ class LlmService
         };
 
         return [$provider, $model];
-    }
-
-    /**
-     * Convert application messages to Prism message format.
-     *
-     * @param  Collection<int, \App\Models\Message>  $messages
-     * @return array<int, UserMessage|AssistantMessage>
-     */
-    protected function convertToPrismMessages(Collection $messages): array
-    {
-        return $messages->map(function ($message) {
-            if ($message->isFromUser()) {
-                return new UserMessage($message->content);
-            }
-
-            return new AssistantMessage($message->content);
-        })->toArray();
     }
 }
