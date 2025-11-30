@@ -2,8 +2,8 @@
 
 return [
     'api_keys' => [
-        "openai" => env('OPENAI_API_KEY'),
-        "anthropic" => env('ANTHROPIC_API_KEY'),
+        'openai' => env('OPENAI_API_KEY'),
+        'anthropic' => env('ANTHROPIC_API_KEY'),
     ],
     'max_tokens' => [
         'default' => 100000,
@@ -12,16 +12,31 @@ return [
     'llm_model' => env('LLM_MODEL', 'openai/gpt-5.1'),
     'model_choices' => [
         'openai' => [
-            'gpt-5.1' => 'GPT-5.1',
-            'gpt-5.1-mini' => 'GPT-5.1 Mini',
+            'gpt-5.1-mini' => [
+                'label' => 'GPT-5.1 Mini',
+                'description' => 'The smaller - but quicker and cheaper - model from OpenAI.',
+            ],
+            'gpt-5.1' => [
+                'label' => 'GPT-5.1',
+                'description' => 'The most powerful model from OpenAI.',
+            ],
         ],
         'anthropic' => [
-            'claude-sonnet-4-5' => 'Claude Sonnet 4.5',
-            'claude-haiku-4-5' => 'Claude Haiku 4.5',
-            'claude-opus-4.5' => 'Claude Opus 4.5',
+            'claude-haiku-4-5' => [
+                'label' => 'Claude Haiku 4.5',
+                'description' => 'The smaller - but quicker and cheaper - model from Anthropic.',
+            ],
+            'claude-sonnet-4-5' => [
+                'label' => 'Claude Sonnet 4.5',
+                'description' => 'The mid-range model from Anthropic.',
+            ],
+            'claude-opus-4.5' => [
+                'label' => 'Claude Opus 4.5',
+                'description' => 'The most powerful model from Anthropic.',
+            ],
         ],
     ],
-    "org_chart" => [
+    'org_chart' => [
         'organisation_name' => 'University of Somewhere - College of Science & Engineering IT',
         'teams' => [
             [

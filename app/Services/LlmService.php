@@ -16,10 +16,11 @@ class LlmService
      * @param  string|null  $systemPrompt  Custom system prompt, or null to use default chat prompt
      * @param  bool  $useSmallModel  Whether to use the small/cheap model (default: false)
      * @param  int|null  $maxTokens  Maximum tokens for response (default: config value or 100000)
+     * @param  string|null  $providerModel  Specific provider/model in the format provider/model, or null to use the configured default
      */
-    public function generateResponse(Conversation $conversation, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null): string
+    public function generateResponse(Conversation $conversation, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null, ?string $providerModel = null): string
     {
-        [$provider, $model] = $this->parseProviderAndModel();
+        [$provider, $model] = $this->parseProviderAndModel($providerModel);
 
         $systemPrompt = $systemPrompt ?? $this->renderChatPrompt($conversation);
         $prismMessages = $conversation->toPrismMessages();
@@ -54,9 +55,9 @@ class LlmService
      *
      * @throws InvalidArgumentException
      */
-    protected function parseProviderAndModel(): array
+    protected function parseProviderAndModel(?string $providerModel = null): array
     {
-        $llmConfig = config('ticky.llm_model');
+        $llmConfig = $providerModel ?? config('ticky.llm_model');
 
         if (! str_contains($llmConfig, '/')) {
             throw new InvalidArgumentException('LLM configuration must be in the format "provider/model" (e.g., "openai/gpt-5.1").');

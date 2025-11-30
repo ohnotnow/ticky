@@ -15,7 +15,7 @@ uses(RefreshDatabase::class);
 it('sends a prompt and shows the llm response', function (): void {
     $llmResponse = '{"recommendations":[{"team":"College Infrastructure","person":"Fiona Drummond","confidence":9,"reasoning":"Handles Linux servers."},{"team":"Research Computing","person":"Hamish Baxter","confidence":7,"reasoning":"Focuses on research software."}]}';
 
-    Prism::fake([
+    $prism = Prism::fake([
         TextResponseFake::make()
             ->withText($llmResponse)
             ->withUsage(new Usage(10, 20)),
@@ -26,6 +26,7 @@ it('sends a prompt and shows the llm response', function (): void {
     $this->actingAs($user);
 
     Livewire::test(TriageChat::class)
+        ->assertSet('selectedModel', config('ticky.llm_model'))
         ->set('prompt', 'The GPU node is failing jobs')
         ->call('send')
         ->assertSet('ticketRuns.0.response', $llmResponse)
@@ -39,4 +40,53 @@ it('sends a prompt and shows the llm response', function (): void {
     $assistantMessage = Message::query()->whereNull('user_id')->first();
 
     expect($assistantMessage?->content)->toBe($llmResponse);
+
+    $prism->assertRequest(function (array $requests): void {
+        expect($requests)->toHaveCount(1);
+
+        $request = $requests[0];
+
+        expect($request->provider())->toBe('openai');
+        expect($request->model())->toBe('gpt-5.1');
+    });
+});
+
+it('uses the selected provider and model when provided', function (): void {
+    $llmResponse = '{"recommendations":[{"team":"Service Delivery","person":"Ryan McAllister","confidence":8,"reasoning":"Handles hardware troubleshooting"}]}';
+
+    $prism = Prism::fake([
+        TextResponseFake::make()
+            ->withText($llmResponse)
+            ->withUsage(new Usage(5, 10)),
+    ]);
+
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(TriageChat::class)
+        ->set('prompt', 'Mouse not working on new laptop')
+        ->set('selectedModel', 'anthropic/claude-haiku-4-5')
+        ->call('send')
+        ->assertSet('ticketRuns.0.response', $llmResponse);
+
+    $prism->assertRequest(function (array $requests): void {
+        expect($requests)->toHaveCount(1);
+
+        $request = $requests[0];
+
+        expect($request->provider())->toBe('anthropic');
+        expect($request->model())->toBe('claude-haiku-4-5');
+    });
+});
+
+it('closes the model picker when a model is selected', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(TriageChat::class)
+        ->set('showModelPicker', true)
+        ->set('selectedModel', 'anthropic/claude-haiku-4-5')
+        ->assertSet('showModelPicker', false);
 });
