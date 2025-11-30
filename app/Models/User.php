@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->forenames . ' ' . $this->surname;
+    }
 }

@@ -24,9 +24,9 @@
                 </flux:sidebar.header>
                 <flux:sidebar.nav>
                     <flux:sidebar.item icon="home" href="/" wire:navigate>Home</flux:sidebar.item>
-                    <flux:sidebar.item icon="plus-circle" href="/triage" wire:navigate>New</flux:sidebar.item>
+                    <flux:sidebar.item icon="plus-circle" href="/triage" wire:navigate>Triage</flux:sidebar.item>
                     <flux:separator class="my-2" />
-                    <flux:sidebar.item icon="chart-bar" href="/report" wire:navigate>Report</flux:sidebar.item>
+                    <flux:sidebar.item icon="chart-bar" href="{{ route('report') }}" wire:navigate>Report</flux:sidebar.item>
                 </flux:sidebar.nav>
                 <flux:sidebar.spacer />
                 <flux:sidebar.nav>

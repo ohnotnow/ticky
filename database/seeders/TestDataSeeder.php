@@ -6,7 +6,9 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TestDataSeeder extends Seeder
 {
@@ -24,9 +26,15 @@ class TestDataSeeder extends Seeder
         ]);
 
         $this->seedConversations($admin);
+
+        $userCount = random_int(10, 15);
+
+        User::factory($userCount)->create()->each(function (User $user): void {
+            $this->seedConversations($user, random_int(0, 20));
+        });
     }
 
-    protected function seedConversations(User $user): void
+    protected function seedConversations(User $user, ?int $conversationTotal = null): void
     {
         $samples = [
             [
@@ -127,20 +135,34 @@ class TestDataSeeder extends Seeder
             ],
         ];
 
-        foreach ($samples as $sample) {
+        $conversationsToCreate = $conversationTotal ?? count($samples);
+
+        for ($i = 0; $i < $conversationsToCreate; $i++) {
+            $sample = $samples[array_rand($samples)];
+
+            $createdAt = Carbon::now()->subDays(random_int(0, 300))->setTime(random_int(7, 18), random_int(0, 59));
+
+            $userMessageContent = $sample['user_message'].' '.Str::of(fake()->sentence())->rtrim('.');
+
             $conversation = Conversation::create([
                 'user_id' => $user->id,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
             ]);
 
             Message::create([
                 'conversation_id' => $conversation->id,
                 'user_id' => $user->id,
-                'content' => $sample['user_message'],
+                'content' => $userMessageContent,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
             ]);
 
             Message::create([
                 'conversation_id' => $conversation->id,
                 'content' => json_encode(['recommendations' => $sample['recommendations']]),
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
             ]);
         }
     }

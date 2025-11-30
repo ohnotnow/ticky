@@ -78,7 +78,7 @@
                                     <flux:text variant="subtle">Never</flux:text>
                                 @endif
                             </flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="end">
                                 <flux:button
                                     wire:click="confirmRevoke({{ $token->id }})"
                                     variant="danger"

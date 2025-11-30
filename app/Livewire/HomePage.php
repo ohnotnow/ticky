@@ -19,6 +19,8 @@ class HomePage extends Component
 
     public string $filter = '';
 
+    public bool $showAll = false;
+
     public bool $showConversation = false;
 
     public ?Conversation $activeConversation = null;
@@ -30,17 +32,17 @@ class HomePage extends Component
     {
         $conversation = Conversation::query()
             ->with(['messages' => fn ($query) => $query->oldest()])
-            ->where('user_id', Auth::id())
+            ->when(! $this->showAll, fn ($query) => $query->where('user_id', Auth::id()))
             ->find($conversationId);
 
-        if (! $conversation) {
+        if (! $conversation || (! $this->showAll && $conversation->user_id !== Auth::id())) {
             throw new NotFoundHttpException;
         }
 
         $this->activeConversation = $conversation;
         $this->activeMessages = $conversation->messages
             ->map(fn ($message) => [
-                'from' => $message->isFromUser() ? 'You' : 'Assistant',
+                'from' => $message->isFromUser() ? 'User' : 'Assistant',
                 'content' => $message->content,
                 'at' => $message->created_at,
                 'recommendations' => $message->recommendationsForView(),
@@ -60,11 +62,17 @@ class HomePage extends Component
         $this->resetPage();
     }
 
+    public function updatedShowAll(): void
+    {
+        $this->resetPage();
+        $this->closeConversation();
+    }
+
     public function render(): View
     {
         $conversations = Conversation::query()
             ->with(['messages' => fn ($query) => $query->oldest()->limit(1)])
-            ->where('user_id', Auth::id())
+            ->when(! $this->showAll, fn ($query) => $query->where('user_id', Auth::id()))
             ->when($this->filter, fn ($query) => $query->whereHas('messages', function ($messageQuery) {
                 $messageQuery->where('content', 'like', '%'.$this->filter.'%');
             }))

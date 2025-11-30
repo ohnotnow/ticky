@@ -1,13 +1,19 @@
 <div class="space-y-6">
-    <div class="flex items-center justify-between gap-4">
-        <flux:heading size="xl" level="1">Ticky</flux:heading>
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <flux:heading class="hidden md:block" size="xl" level="1">Ticky</flux:heading>
 
-        <div class="flex-1 flex justify-center max-w-sm">
-                <flux:input
-                    wire:model.live="filter"
-                    placeholder="Search conversations…"
-                    icon="magnifying-glass"
-                />
+        <div class="flex-1 flex flex-col md:flex-row items-center justify-center gap-4 max-w-3xl">
+            <flux:input
+                wire:model.live="filter"
+                placeholder="Search conversations…"
+                icon="magnifying-glass"
+                class="flex-1"
+            />
+            <flux:switch
+                wire:model.live="showAll"
+                label="Show all"
+                class="cursor-pointer"
+            />
         </div>
 
         <flux:button tag="a" href="{{ route('triage') }}" variant="primary" icon="paper-airplane" wire:navigate class="cursor-pointer">
@@ -15,55 +21,57 @@
         </flux:button>
     </div>
 
+    <flux:separator class="my-4" />
+
     @if ($conversations->isEmpty())
         <flux:callout variant="secondary" icon="information-circle">
             No conversations yet. Start a triage to see history here.
         </flux:callout>
     @else
-        <div class="space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @foreach ($conversations as $conversation)
                 @php
                     $firstMessage = $conversation->messages->sortBy('created_at')->first();
                 @endphp
                 <flux:card
-                    class="cursor-pointer"
+                    class="cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-600"
                     wire:click="openConversation({{ $conversation->id }})"
+                    wire:key="conversation-{{ $conversation->id }}"
                 >
-                    <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <flux:heading size="md" level="2">Conversation #{{ $conversation->id }}</flux:heading>
+                            <div class="flex justify-between items-center gap-2">
+                                <flux:badge variant="pill">
+                                    {{ $conversation->created_at->diffForHumans() }}
+                                </flux:badge>
+                                @if ($conversation->user_id !== Auth::id())
+                                    <flux:avatar size="xs" title="{{ $conversation->user->full_name }}" name="{{ $conversation->user->full_name }}" />
+                                @endif
+                            </div>
                             <flux:text>
                                 {{ $firstMessage ? Str::limit($firstMessage->content, 120) : 'No messages yet.' }}
                             </flux:text>
                         </div>
-                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $conversation->created_at->diffForHumans() }}
-                        </flux:text>
                     </div>
                 </flux:card>
             @endforeach
-            <flux:pagination :paginator="$conversations" class="pt-2" />
         </div>
+        <flux:pagination :paginator="$conversations" class="pt-2" />
     @endif
 
     <flux:modal
         wire:model="showConversation"
         variant="flyout"
-        class="md:w-xl"
+        class="w-3/4 md:w-xl"
         position="right"
         :dismissible="true"
     >
         <div class="space-y-4">
-            <div class="flex items-start justify-between">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="space-y-1">
                     <flux:heading size="lg">
                         Conversation #{{ $activeConversation?->id }}
                     </flux:heading>
-                    @if ($activeConversation)
-                        <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                            Started {{ $activeConversation->created_at->diffForHumans() }}
-                        </flux:text>
-                    @endif
                 </div>
                 <div class="flex items-center gap-2">
                     @if ($activeConversation)
@@ -89,9 +97,6 @@
                         >
                         </flux:button>
                     @endif
-                    <flux:modal.close>
-                        <flux:button variant="ghost" icon="x-mark" class="cursor-pointer" />
-                    </flux:modal.close>
                 </div>
             </div>
 
@@ -112,8 +117,8 @@
                             @include('partials.assistant-recommendations', ['recommendations' => $message['recommendations']])
                         @else
                             <flux:callout
-                                :variant="$message['from'] === 'You' ? 'subtle' : 'secondary'"
-                                icon="{{ $message['from'] === 'You' ? 'user' : 'sparkles' }}"
+                                :variant="$message['from'] === 'User' ? 'subtle' : 'secondary'"
+                                icon="{{ $message['from'] === 'User' ? 'user' : 'sparkles' }}"
                             >
                                 <flux:text class="whitespace-pre-wrap">
                                     {{ $message['content'] }}
