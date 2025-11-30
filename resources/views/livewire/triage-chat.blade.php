@@ -1,7 +1,9 @@
 <div class="space-y-6">
     <div class="space-y-2">
         <flux:heading size="xl" level="1">Ticket triage</flux:heading>
-        <flux:text>Paste a support ticket and ask the assistant where it should go.</flux:text>
+        <flux:text>
+            Paste a support ticket and ask the assistant where it should go.
+        </flux:text>
     </div>
 
     @error('prompt')
