@@ -65,9 +65,34 @@
                         </flux:text>
                     @endif
                 </div>
-                <flux:modal.close>
-                    <flux:button variant="ghost" icon="x-mark" class="cursor-pointer" />
-                </flux:modal.close>
+                <div class="flex items-center gap-2">
+                    @if ($activeConversation)
+                        <flux:button
+                            tag="a"
+                            href="{{ route('conversations.download.markdown', $activeConversation) }}"
+                            size="sm"
+                            variant="subtle"
+                            icon="document-text"
+                            class="cursor-pointer"
+                            title="Download markdown"
+                        >
+                        </flux:button>
+
+                        <flux:button
+                            tag="a"
+                            href="{{ route('conversations.download.json', $activeConversation) }}"
+                            size="sm"
+                            variant="subtle"
+                            icon="code-bracket"
+                            class="cursor-pointer"
+                            title="Download JSON"
+                        >
+                        </flux:button>
+                    @endif
+                    <flux:modal.close>
+                        <flux:button variant="ghost" icon="x-mark" class="cursor-pointer" />
+                    </flux:modal.close>
+                </div>
             </div>
 
             <div class="space-y-3">

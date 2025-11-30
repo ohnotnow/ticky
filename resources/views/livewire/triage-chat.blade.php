@@ -36,6 +36,30 @@
                 'recommendations' => $ticketRun['recommendations'],
                 'response' => $ticketRun['response'],
             ])
+
+            <div class="flex items-center gap-2">
+                <flux:button
+                    tag="a"
+                    href="{{ route('conversations.download.markdown', $ticketRun['conversation_id']) }}"
+                    size="sm"
+                    variant="subtle"
+                    icon="document-text"
+                    class="cursor-pointer"
+                    title="Download markdown"
+                >
+                </flux:button>
+
+                <flux:button
+                    tag="a"
+                    href="{{ route('conversations.download.json', $ticketRun['conversation_id']) }}"
+                    size="sm"
+                    variant="ghost"
+                    icon="code-bracket"
+                    class="cursor-pointer"
+                    title="Download JSON"
+                >
+                </flux:button>
+            </div>
         </div>
     @endforeach
 </div>
