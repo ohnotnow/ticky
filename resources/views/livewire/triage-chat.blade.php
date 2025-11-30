@@ -18,8 +18,6 @@
             placeholder="Paste one or more tickets. Separate multiple tickets with --- on its own line."
         >
             <x-slot name="actionsLeading">
-                <flux:button size="sm" variant="subtle" icon="paper-clip" />
-                <flux:button size="sm" variant="subtle" icon="slash" />
                 <flux:button size="sm" variant="subtle" icon="adjustments-horizontal" />
             </x-slot>
 

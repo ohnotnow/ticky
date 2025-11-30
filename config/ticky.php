@@ -10,6 +10,17 @@ return [
         'small' => 10000,
     ],
     'llm_model' => env('LLM_MODEL', 'openai/gpt-5.1'),
+    'model_choices' => [
+        'openai' => [
+            'gpt-5.1' => 'GPT-5.1',
+            'gpt-5.1-mini' => 'GPT-5.1 Mini',
+        ],
+        'anthropic' => [
+            'claude-sonnet-4-5' => 'Claude Sonnet 4.5',
+            'claude-haiku-4-5' => 'Claude Haiku 4.5',
+            'claude-opus-4.5' => 'Claude Opus 4.5',
+        ],
+    ],
     "org_chart" => [
         'organisation_name' => 'University of Somewhere - College of Science & Engineering IT',
         'teams' => [
