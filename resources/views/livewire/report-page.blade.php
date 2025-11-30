@@ -98,7 +98,7 @@
                     <flux:text>No conversations in this range yet. Try widening the window.</flux:text>
                 </flux:callout>
             @else
-                <flux:chart wire:model="chartData" class="aspect-[4/2] w-full">
+                <flux:chart wire:key="chart-{{ $rangeLabel }}" wire:model="chartData" class="aspect-[4/2] w-full">
                     <flux:chart.svg>
                         <flux:chart.line field="conversations" class="text-blue-500" />
                         <flux:chart.point field="conversations" class="text-blue-400" />
