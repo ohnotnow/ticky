@@ -19,6 +19,12 @@ class ReportPage extends Component
 
     public int $totalMessages = 0;
 
+    public int $daysInRange = 1;
+
+    public float $averagePerDay = 0.0;
+
+    public string $rangeLabel = '';
+
     /** @var array<int, array<string, mixed>> */
     public array $chartData = [];
 
@@ -67,6 +73,16 @@ class ReportPage extends Component
         $this->chartData = $this->formatChartData(
             $this->buildDailyCounts($conversations)
         );
+
+        $this->daysInRange = $this->range ? max(1, $this->range->count()) : 1;
+        $this->averagePerDay = $this->daysInRange ? round($this->totalConversations / $this->daysInRange, 1) : 0;
+        $this->rangeLabel = $this->range
+            ? sprintf(
+                '%s — %s',
+                $this->range->start()->format('M j, Y'),
+                $this->range->end()->format('M j, Y'),
+            )
+            : 'All time';
     }
 
     protected function buildDailyCounts(Collection $conversations): Collection

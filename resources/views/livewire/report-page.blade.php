@@ -1,10 +1,3 @@
-@php
-    $start = $range?->start();
-    $end = $range?->end();
-    $daysInRange = $range ? max(1, $range->count()) : 1;
-    $averagePerDay = $daysInRange ? round($totalConversations / $daysInRange, 1) : 0;
-@endphp
-
 <div class="space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="space-y-3">
@@ -17,11 +10,9 @@
                 Track how triage is being used and who is engaging with it.
             </flux:text>
             <div class="flex flex-wrap items-center gap-2">
-                @if ($range)
-                    <flux:badge color="blue" icon="clock" variant="pill">
-                        {{ $start?->format('M j, Y') }} — {{ $end?->format('M j, Y') }}
-                    </flux:badge>
-                @endif
+                <flux:badge color="blue" icon="clock" variant="pill">
+                    {{ $rangeLabel }}
+                </flux:badge>
                 <flux:badge color="green" icon="arrow-trending-up" variant="pill">
                     Avg {{ $averagePerDay }} tickets/day
                 </flux:badge>
@@ -32,7 +23,7 @@
             <div class="space-y-2">
                 <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">Date range</flux:text>
                 <flux:date-picker
-                    wire:model="range"
+                    wire:model.live="range"
                     mode="range"
                     with-presets
                     class="cursor-pointer"
