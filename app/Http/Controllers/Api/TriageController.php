@@ -38,17 +38,18 @@ class TriageController extends Controller
 
         $conversation->load(['messages' => fn ($query) => $query->oldest()]);
 
-        $rawResponse = $this->llmService->generateResponse($conversation);
+        $llmResponse = $this->llmService->generateResponse($conversation);
 
         $conversation->messages()->create([
-            'content' => $rawResponse,
+            'content' => $llmResponse['text'],
+            'model' => $llmResponse['model'],
         ]);
 
         return [
             'conversation_id' => $conversation->id,
             'ticket' => $ticket,
-            'recommendations' => Message::recommendationsFromContent($rawResponse),
-            'raw_response' => $rawResponse,
+            'recommendations' => Message::recommendationsFromContent($llmResponse['text']),
+            'raw_response' => $llmResponse['text'],
         ];
     }
 }

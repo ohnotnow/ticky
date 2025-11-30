@@ -74,17 +74,18 @@ class TriageChat extends Component
 
         $conversation->load(['messages' => fn ($query) => $query->oldest()]);
 
-        $response = $this->llmService->generateResponse($conversation, providerModel: $providerModel);
+        $llmResponse = $this->llmService->generateResponse($conversation, providerModel: $providerModel);
 
         $conversation->messages()->create([
-            'content' => $response,
+            'content' => $llmResponse['text'],
+            'model' => $llmResponse['model'],
         ]);
 
         return [
             'conversation_id' => $conversation->id,
             'prompt' => $ticket,
-            'response' => $response,
-            'recommendations' => Message::recommendationsFromContent($response),
+            'response' => $llmResponse['text'],
+            'recommendations' => Message::recommendationsFromContent($llmResponse['text']),
         ];
     }
 
