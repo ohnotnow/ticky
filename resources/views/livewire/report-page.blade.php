@@ -1,14 +1,7 @@
 <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div class="space-y-3">
-            <div class="flex items-center gap-2">
-                <flux:icon.sparkles class="text-blue-500" />
-                <flux:text class="text-sm">Reporting</flux:text>
-            </div>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-col md:flex-row items-center gap-2">
             <flux:heading size="xl" level="1">Usage insights</flux:heading>
-            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
-                Track how triage is being used and who is engaging with it.
-            </flux:text>
             <div class="flex flex-wrap items-center gap-2">
                 <flux:badge color="blue" icon="clock" variant="pill">
                     {{ $rangeLabel }}
@@ -18,21 +11,19 @@
                 </flux:badge>
             </div>
         </div>
-
-        <flux:card class="max-w-md w-full md:w-auto">
-            <div class="space-y-2">
-                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">Date range</flux:text>
-                <flux:date-picker
-                    wire:model.live="range"
-                    mode="range"
-                    with-presets
-                    class="cursor-pointer"
-                />
-            </div>
-        </flux:card>
+        <flux:date-picker
+            wire:model.live="range"
+            mode="range"
+            with-presets
+            class="cursor-pointer"
+            size="sm"
+        />
     </div>
 
-    <div class="grid gap-4 md:grid-cols-3">
+
+    <flux:separator />
+
+    <div class="grid gap-4 md:grid-cols-3 mt-2">
         <flux:card>
             <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">
@@ -44,7 +35,7 @@
                         {{ $daysInRange }} day window
                     </flux:text>
                 </div>
-                <flux:icon.chat-bubble-bottom-center-text class="text-blue-500" />
+                <flux:icon.chat-bubble-bottom-center-text class="text-blue-500 size-12" />
             </div>
         </flux:card>
 
@@ -59,7 +50,7 @@
                         Based on conversation authors
                     </flux:text>
                 </div>
-                <flux:icon.users class="text-emerald-500" />
+                <flux:icon.users class="text-emerald-500 size-12" />
             </div>
         </flux:card>
 
@@ -74,7 +65,7 @@
                         User + assistant messages in range
                     </flux:text>
                 </div>
-                <flux:icon.inbox-arrow-down class="text-amber-500" />
+                <flux:icon.inbox-arrow-down class="text-amber-500 size-12" />
             </div>
         </flux:card>
     </div>
@@ -87,9 +78,16 @@
                     Conversations per day in the selected window.
                 </flux:text>
             </div>
-            <flux:badge color="purple" icon="chart-bar" variant="pill">
-                Daily trend
-            </flux:badge>
+            <div class="flex items-center gap-2">
+                @if (count($chartData) <= 1)
+                    <flux:badge color="amber" icon="exclamation-triangle" variant="pill">
+                        Not enough data to plot
+                    </flux:badge>
+                @endif
+                <flux:badge color="purple" icon="chart-bar" variant="pill">
+                    Daily trend
+                </flux:badge>
+            </div>
         </div>
 
         <div class="mt-4">
