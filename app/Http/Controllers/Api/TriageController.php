@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TriageController extends Controller
 {
-    public function __construct(private readonly LlmService $llmService)
-    {
-    }
+    public function __construct(private readonly LlmService $llmService) {}
 
     public function store(TriageRequest $request): JsonResponse
     {
@@ -38,12 +36,9 @@ class TriageController extends Controller
             'content' => $ticket,
         ]);
 
-        $messages = $conversation
-            ->messages()
-            ->oldest()
-            ->get();
+        $conversation->load(['messages' => fn ($query) => $query->oldest()]);
 
-        $rawResponse = $this->llmService->generateResponse($conversation, $messages);
+        $rawResponse = $this->llmService->generateResponse($conversation);
 
         $conversation->messages()->create([
             'content' => $rawResponse,

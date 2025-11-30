@@ -3,25 +3,21 @@
 namespace App\Services;
 
 use App\Models\Conversation;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use InvalidArgumentException;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Facades\Prism;
-use Prism\Prism\ValueObjects\Messages\AssistantMessage;
-use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 class LlmService
 {
     /**
      * Generate a response based on conversation history.
      *
-     * @param  Collection<int, \App\Models\Message>  $messages
      * @param  string|null  $systemPrompt  Custom system prompt, or null to use default chat prompt
      * @param  bool  $useSmallModel  Whether to use the small/cheap model (default: false)
      * @param  int|null  $maxTokens  Maximum tokens for response (default: config value or 100000)
      */
-    public function generateResponse(Conversation $conversation, Collection $messages, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null): string
+    public function generateResponse(Conversation $conversation, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null): string
     {
         [$provider, $model] = $this->parseProviderAndModel();
 
