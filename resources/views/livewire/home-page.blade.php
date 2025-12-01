@@ -107,7 +107,11 @@
                     @endphp
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
-                            <flux:heading size="sm">{{ $message['from'] }}</flux:heading>
+                            @if ($message['model'])
+                                <flux:badge variant="pill" size="sm">{{ $message['model'] }}</flux:badge>
+                            @else
+                                <flux:heading size="sm">{{ $message['from'] }}</flux:heading>
+                            @endif
                             <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
                                 {{ $message['at']->diffForHumans() }}
                             </flux:text>

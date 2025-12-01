@@ -44,6 +44,7 @@ class HomePage extends Component
             ->map(fn ($message) => [
                 'from' => $message->isFromUser() ? 'User' : 'Assistant',
                 'content' => $message->content,
+                'model' => $message->model,
                 'at' => $message->created_at,
                 'recommendations' => $message->recommendationsForView(),
             ])

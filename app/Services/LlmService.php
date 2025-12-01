@@ -17,8 +17,9 @@ class LlmService
      * @param  bool  $useSmallModel  Whether to use the small/cheap model (default: false)
      * @param  int|null  $maxTokens  Maximum tokens for response (default: config value or 100000)
      * @param  string|null  $providerModel  Specific provider/model in the format provider/model, or null to use the configured default
+     * @return array{text: string, model: string}
      */
-    public function generateResponse(Conversation $conversation, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null, ?string $providerModel = null): string
+    public function generateResponse(Conversation $conversation, ?string $systemPrompt = null, bool $useSmallModel = false, ?int $maxTokens = null, ?string $providerModel = null): array
     {
         [$provider, $model] = $this->parseProviderAndModel($providerModel);
 
@@ -34,7 +35,12 @@ class LlmService
             ->withMaxTokens($maxTokens)
             ->asText();
 
-        return $response->text;
+        $providerModel = $providerModel ?? config('ticky.llm_model');
+
+        return [
+            'text' => $response->text,
+            'model' => $providerModel,
+        ];
     }
 
     /**

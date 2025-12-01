@@ -20,6 +20,7 @@ class MessageResource extends JsonResource
             'from' => $isUser ? 'user' : 'assistant',
             'content' => $isUser ? $this->resource->content : null,
             'raw_response' => $isUser ? null : $this->resource->content,
+            'model' => $isUser ? null : $this->resource->model,
             'recommendations' => $this->resource->recommendationsForView(),
             'created_at' => $this->resource->created_at,
         ];

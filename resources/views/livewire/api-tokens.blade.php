@@ -120,6 +120,7 @@
     {
       "conversation_id": 456,
       "ticket": "Printer is jammed",
+      "model": "anthropic/claude-sonnet-4-5",
       "recommendations": [
         {"team": "Service Desk", "person": "Alex Smith", "confidence": 9, "reasoning": "Handles print issues"}
       ],
@@ -128,6 +129,7 @@
     {
       "conversation_id": 457,
       "ticket": "VPN is down",
+      "model": "anthropic/claude-sonnet-4-5",
       "recommendations": [],
       "raw_response": "Assistant text if no recommendations found"
     }
@@ -147,11 +149,12 @@
       "id": 123,
       "created_at": "2024-02-01T12:34:56Z",
       "messages": [
-        {"from": "user", "content": "Ticket text", "created_at": "2024-02-01T12:34:56Z"},
+        {"from": "user", "content": "Ticket text", "model": null, "created_at": "2024-02-01T12:34:56Z"},
         {
           "from": "assistant",
           "content": null,
           "raw_response": "{\"recommendations\":[...]}",
+          "model": "anthropic/claude-sonnet-4-5",
           "recommendations": [{"team": "Service Desk", "person": "Alex Smith", "confidence": 9, "reasoning": "Handles print issues"}],
           "created_at": "2024-02-01T12:35:10Z"
         }
@@ -193,6 +196,7 @@ print(result)</code></pre>
     {
       'conversation_id': 456,
       'ticket': 'Printer is jammed',
+      'model': 'anthropic/claude-sonnet-4-5',
       'recommendations': [
         {'team': 'Service Desk', 'person': 'Alex Smith', 'confidence': 9, 'reasoning': 'Handles print issues'}
       ],
@@ -214,11 +218,12 @@ print(conversations)</code></pre>
       'id': 123,
       'created_at': '2024-02-01T12:34:56Z',
       'messages': [
-        {'from': 'user', 'content': 'Ticket text', 'created_at': '2024-02-01T12:34:56Z'},
+        {'from': 'user', 'content': 'Ticket text', 'model': None, 'created_at': '2024-02-01T12:34:56Z'},
         {
           'from': 'assistant',
           'content': None,
           'raw_response': '{"recommendations":[...]}',
+          'model': 'anthropic/claude-sonnet-4-5',
           'recommendations': [{'team': 'Service Desk', 'person': 'Alex Smith', 'confidence': 9, 'reasoning': 'Handles print issues'}],
           'created_at': '2024-02-01T12:35:10Z'
         }
