@@ -85,6 +85,7 @@ class TriageChat extends Component
             'conversation_id' => $conversation->id,
             'prompt' => $ticket,
             'response' => $llmResponse['text'],
+            'model' => $llmResponse['model'],
             'recommendations' => Message::recommendationsFromContent($llmResponse['text']),
         ];
     }

@@ -161,6 +161,7 @@ class TestDataSeeder extends Seeder
             Message::create([
                 'conversation_id' => $conversation->id,
                 'content' => json_encode(['recommendations' => $sample['recommendations']]),
+                'model' => config('ticky.llm_model'),
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ]);
