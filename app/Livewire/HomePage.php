@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Conversation;
+use App\Services\LlmService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -12,6 +13,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class HomePage extends Component
 {
     use WithPagination;
+
+    protected LlmService $llmService;
 
     public int $perPage = 50;
 
@@ -27,6 +30,11 @@ class HomePage extends Component
 
     /** @var array<int, array<string, mixed>> */
     public array $activeMessages = [];
+
+    public function boot(LlmService $llmService): void
+    {
+        $this->llmService = $llmService;
+    }
 
     public function openConversation(int $conversationId): void
     {
@@ -56,6 +64,33 @@ class HomePage extends Component
     public function closeConversation(): void
     {
         $this->reset(['showConversation', 'activeConversation', 'activeMessages']);
+    }
+
+    public function retryConversation(int $conversationId): void
+    {
+        $conversation = Conversation::query()
+            ->when(! $this->showAll, fn ($query) => $query->where('user_id', Auth::id()))
+            ->find($conversationId);
+
+        if (! $conversation) {
+            return;
+        }
+
+        // Remove existing assistant responses to start fresh
+        $conversation->messages()->whereNull('user_id')->delete();
+
+        // Refresh conversation to ensure only user messages are passed to LLM
+        $conversation->refresh();
+        $conversation->load('messages');
+
+        $llmResponse = $this->llmService->generateResponse($conversation);
+
+        $conversation->messages()->create([
+            'content' => $llmResponse['text'],
+            'model' => $llmResponse['model'],
+        ]);
+
+        $this->openConversation($conversation->id);
     }
 
     public function updatingFilter(): void
