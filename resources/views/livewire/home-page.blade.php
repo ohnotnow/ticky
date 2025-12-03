@@ -73,31 +73,6 @@
                         Conversation #{{ $activeConversation?->id }}
                     </flux:heading>
                 </div>
-                <div class="flex items-center gap-2">
-                    @if ($activeConversation)
-                        <flux:button
-                            tag="a"
-                            href="{{ route('conversations.download.markdown', $activeConversation) }}"
-                            size="sm"
-                            variant="subtle"
-                            icon="document-text"
-                            class="cursor-pointer"
-                            title="Download markdown"
-                        >
-                        </flux:button>
-
-                        <flux:button
-                            tag="a"
-                            href="{{ route('conversations.download.json', $activeConversation) }}"
-                            size="sm"
-                            variant="subtle"
-                            icon="code-bracket"
-                            class="cursor-pointer"
-                            title="Download JSON"
-                        >
-                        </flux:button>
-                    @endif
-                </div>
             </div>
 
             <div class="space-y-3">
@@ -135,7 +110,28 @@
                 @endforelse
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    @if ($activeConversation)
+                        <flux:button
+                            href="{{ route('conversations.download.markdown', $activeConversation) }}"
+                            variant="subtle"
+                            icon="document-text"
+                            class="cursor-pointer"
+                            title="Download markdown"
+                        >
+                        </flux:button>
+
+                        <flux:button
+                            href="{{ route('conversations.download.json', $activeConversation) }}"
+                            variant="subtle"
+                            icon="code-bracket"
+                            class="cursor-pointer"
+                            title="Download JSON"
+                        >
+                        </flux:button>
+                    @endif
+                </div>
                 <flux:modal.close>
                     <flux:button variant="primary" class="cursor-pointer">Close</flux:button>
                 </flux:modal.close>
