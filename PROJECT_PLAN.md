@@ -30,6 +30,7 @@ Built with Laravel 12, Livewire 3, and Flux UI.
 - Filter members by name or specific team
 - **Steerability**: Edit specific "Routing Guidance" notes for members (e.g. "Only handles physical hardware") which are injected into the LLM prompt to guide decisions
 - Skill proficiency tracking (High/Medium/Low) with visual indicators
+- Guidance text truncated in table view with full text on hover
 
 ### API Access
 - Sanctum-protected REST API for programmatic access
@@ -113,7 +114,17 @@ List your conversations with messages.
 php artisan db:seed --class=TestDataSeeder
 ```
 
-Seeds an admin user (`admin2x@example.com` / `secret`) and realistic sample conversations.
+Seeds an admin user (`admin2x@example.com` / `secret`) along with:
+
+- **Realistic org chart** (5 teams, 32 members) with explicit skill levels
+- **Route guidance for every member** demonstrating nuanced routing, e.g.:
+  - Callum (networking expert): "WiFi issues and VPN client problems go to Service Delivery"
+  - Ewan (AD expert): "Day-to-day password resets go to Service Delivery"
+  - Dr Kerr (HPC lead): "Day-to-day job failures go to Rory or Niamh first"
+- **12 sample conversations** showing the AI making smart routing decisions:
+  - VPN issues → Service Delivery (not the networking expert)
+  - Password resets → Service Delivery (not the AD expert)
+  - Firewall rules → Infrastructure (correctly routed to specialist)
 
 ### Running Tests
 ```bash
@@ -124,3 +135,4 @@ php artisan test
 - Multi-turn chat/follow-up questions
 - Batch processing improvements
 - Analytics dashboard
+- **Local vs Central IT guidance**: Define clearer routing rules for when tickets should go to "our local College IT team" vs "centrally-managed university services" (Central IT team added to seeder as placeholder)

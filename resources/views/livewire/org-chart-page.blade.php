@@ -43,13 +43,15 @@
                             </flux:table.cell>
                             <flux:table.cell>
                                 @if($member->route_guidance)
-                                    <span class="text-zinc-600 dark:text-zinc-400">{{ $member->route_guidance }}</span>
+                                    <flux:tooltip content="{{ $member->route_guidance }}">
+                                        <span class="text-zinc-600 dark:text-zinc-400 cursor-help">{{ Str::limit($member->route_guidance, 60) }}</span>
+                                    </flux:tooltip>
                                 @else
                                     <span class="text-zinc-400 italic">No guidance set</span>
                                 @endif
                             </flux:table.cell>
                             <flux:table.cell>
-                                <flux:button wire:click="editMember({{ $member->id }})" size="sm" variant="ghost" icon="pencil-square">Edit</flux:button>
+                                <flux:button wire:click="editMember({{ $member->id }})" size="sm" variant="ghost" icon="pencil-square" square />
                             </flux:table.cell>
                         </flux:table.row>
                     @empty
