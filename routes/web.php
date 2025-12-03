@@ -7,11 +7,14 @@ use App\Livewire\ReportPage;
 use App\Livewire\TriageChat;
 use Illuminate\Support\Facades\Route;
 
+use App\Livewire\OrgChartPage;
+
 require __DIR__.'/sso-auth.php';
 
 Route::middleware('auth')->group(function () {
     Route::get('/', HomePage::class)->name('home');
     Route::get('/triage', TriageChat::class)->name('triage');
+    Route::get('/org-chart', OrgChartPage::class)->name('org-chart');
     Route::get('/report', ReportPage::class)->name('report');
     Route::get('/api-keys', ApiTokens::class)->name('api-keys');
     Route::get('/conversations/{conversation}/download/json', [ConversationDownloadController::class, 'json'])->name('conversations.download.json');

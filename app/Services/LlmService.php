@@ -50,7 +50,8 @@ class LlmService
     {
         return View::make('prompts.triage', [
             'conversation' => $conversation->load('user'),
-            'org_chart' => config('ticky.org_chart'),
+            'organisation_name' => config('ticky.org_chart.organisation_name'),
+            'teams' => \App\Models\Team::with('members.skills')->get(),
         ])->render();
     }
 

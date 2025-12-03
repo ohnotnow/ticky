@@ -17,6 +17,7 @@ class TestDataSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(OrgChartSeeder::class);
         $admin = User::factory()->admin()->create([
             'username' => 'admin2x',
             'email' => 'admin2x@example.com',
