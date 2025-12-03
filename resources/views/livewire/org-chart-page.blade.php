@@ -31,7 +31,7 @@
                 </flux:table.columns>
 
                 <flux:table.rows>
-                    @foreach($team->members as $member)
+                    @forelse($team->members as $member)
                         <flux:table.row wire:key="member-{{ $member->id }}">
                             <flux:table.cell class="whitespace-nowrap font-medium">{{ $member->name }}</flux:table.cell>
                             <flux:table.cell>
@@ -52,7 +52,13 @@
                                 <flux:button wire:click="editMember({{ $member->id }})" size="sm" variant="ghost" icon="pencil-square">Edit</flux:button>
                             </flux:table.cell>
                         </flux:table.row>
-                    @endforeach
+                    @empty
+                        <flux:table.row>
+                            <flux:table.cell colspan="4">
+                                <span class="text-zinc-500 dark:text-zinc-400 italic">No members</span>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    @endforelse
                 </flux:table.rows>
             </flux:table>
         </flux:card>

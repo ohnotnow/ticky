@@ -11,7 +11,7 @@ use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
-it('shows teams with members and skills, and hides empty teams', function (): void {
+it('shows teams with members and skills and includes empty teams when not filtering', function (): void {
     $this->actingAs(User::factory()->create());
 
     $networkTeam = Team::factory()->create([
@@ -49,10 +49,11 @@ it('shows teams with members and skills, and hides empty teams', function (): vo
         ->assertSee('Handles networking escalations')
         ->assertSee('Bob Builder')
         ->assertSee('No guidance set')
-        ->assertViewHas('teams', fn ($teams) => $teams->doesntContain(fn ($team) => $team->id === $emptyTeam->id));
+        ->assertSee($emptyTeam->name)
+        ->assertSee('No members');
 });
 
-it('filters members by search and selected team', function (): void {
+it('filters members by search and selected team and hides empty teams when filtering', function (): void {
     $this->actingAs(User::factory()->create());
 
     $infrastructureTeam = Team::factory()->create([
@@ -71,12 +72,16 @@ it('filters members by search and selected team', function (): void {
         'name' => 'Bob Security',
     ]);
 
+    $emptyTeam = Team::factory()->create([
+        'name' => 'Empty Team',
+    ]);
+
     Livewire::test(OrgChartPage::class)
         ->set('search', 'Alice')
         ->assertSee($infrastructureTeam->name)
         ->assertSee('Alice Network')
         ->assertDontSee('Bob Security')
-        ->assertViewHas('teams', fn ($teams) => $teams->contains(fn ($team) => $team->id === $infrastructureTeam->id) && $teams->doesntContain(fn ($team) => $team->id === $securityTeam->id))
+        ->assertViewHas('teams', fn ($teams) => $teams->contains(fn ($team) => $team->id === $infrastructureTeam->id) && $teams->doesntContain(fn ($team) => $team->id === $securityTeam->id) && $teams->doesntContain(fn ($team) => $team->id === $emptyTeam->id))
         ->set('search', '')
         ->set('selectedTeamId', $securityTeam->id)
         ->assertSee($securityTeam->name)
