@@ -65,7 +65,7 @@
                 <flux:text class="mt-2">Update details and routing guidance for this member.</flux:text>
             </div>
 
-            <flux:input wire:model="editingMemberName" label="Name" />
+            <flux:input label="Name" value="{{ $editingMemberName }}" disabled class="w-full" />
 
             <flux:textarea wire:model="editingMemberGuidance" label="Routing Guidance" description="Add specific notes to help the AI understand what this person should or should not handle." rows="4" />
 
