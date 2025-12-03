@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\SkillLevel;
 use App\Models\MemberSkill;
 use App\Models\Team;
 use App\Models\TeamMember;
@@ -15,7 +16,7 @@ class OrgChartSeeder extends Seeder
     public function run(): void
     {
         $orgChart = config('ticky.org_chart');
-        $skillLevels = ['low', 'medium', 'high'];
+        $skillLevels = SkillLevel::cases();
 
         foreach ($orgChart['teams'] as $teamData) {
             $team = Team::create([

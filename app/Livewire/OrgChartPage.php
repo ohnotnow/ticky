@@ -14,11 +14,25 @@ class OrgChartPage extends Component
     public $editingMemberId = null;
     public $editingMemberName = '';
     public $editingMemberGuidance = '';
+    
+    public $search = '';
+    public $selectedTeamId = '';
 
     public function render()
     {
+        $teams = Team::query()
+            ->when($this->selectedTeamId, fn($q) => $q->where('id', $this->selectedTeamId))
+            ->with(['members' => function ($query) {
+                $query->with('skills');
+                if ($this->search) {
+                    $query->where('name', 'like', '%' . $this->search . '%');
+                }
+            }])
+            ->get();
+
         return view('livewire.org-chart-page', [
-            'teams' => Team::with('members.skills')->get(),
+            'teams' => $teams,
+            'teamOptions' => Team::orderBy('name')->get(),
         ]);
     }
 

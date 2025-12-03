@@ -11,7 +11,7 @@ Your task is to read the support ticket below and recommend which team and/or pe
 Team members:
 @foreach($team->members as $member)
 - {{ $member->name }}
-  Skills: {{ $member->skills->map(fn($s) => "{$s->name} ({$s->level})")->join(', ') }}
+  Skills: {{ $member->skills->map(fn($s) => "{$s->name} ({$s->level->value})")->join(', ') }}
 @if($member->route_guidance)
   Guidance: {{ $member->route_guidance }}
 @endif

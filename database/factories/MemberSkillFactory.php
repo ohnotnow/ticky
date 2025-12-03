@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\SkillLevel;
 use App\Models\TeamMember;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,12 +18,10 @@ class MemberSkillFactory extends Factory
      */
     public function definition(): array
     {
-        $skillLevels = ['low', 'medium', 'high'];
-
         return [
             'team_member_id' => TeamMember::factory(),
             'name' => fake()->word(),
-            'level' => $skillLevels[array_rand($skillLevels)],
+            'level' => fake()->randomElement(SkillLevel::class),
         ];
     }
 }

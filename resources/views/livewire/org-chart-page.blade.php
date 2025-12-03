@@ -4,6 +4,17 @@
         <flux:text>Manage teams, members, and routing guidance for the triage assistant.</flux:text>
     </div>
 
+    <div class="flex gap-4">
+        <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Filter members..." class="w-full sm:w-64" />
+
+        <flux:select wire:model.live="selectedTeamId" variant="listbox" searchable placeholder="All Teams" clearable class="w-full sm:w-64">
+            <flux:select.option value="">All Teams</flux:select.option>
+            @foreach($teamOptions as $teamOption)
+                <flux:select.option value="{{ $teamOption->id }}">{{ $teamOption->name }}</flux:select.option>
+            @endforeach
+        </flux:select>
+    </div>
+
     @foreach($teams as $team)
         <flux:card class="space-y-4">
             <div>
@@ -26,7 +37,7 @@
                             <flux:table.cell>
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($member->skills as $skill)
-                                        <flux:badge size="sm" color="zinc">{{ $skill->name }} ({{ $skill->level }})</flux:badge>
+                                        <flux:badge size="sm" :color="$skill->level->color()">{{ $skill->name }} ({{ $skill->level->label() }})</flux:badge>
                                     @endforeach
                                 </div>
                             </flux:table.cell>
