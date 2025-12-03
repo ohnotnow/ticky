@@ -25,6 +25,12 @@ Built with Laravel 12, Livewire 3, and Flux UI.
 - Admins can toggle to view all users' conversations
 - Flyout modal shows full conversation with parsed recommendations
 
+### Org Chart Management (`/org-chart`)
+- View and manage the organisation structure (Teams, Members, Skills)
+- Filter members by name or specific team
+- **Steerability**: Edit specific "Routing Guidance" notes for members (e.g. "Only handles physical hardware") which are injected into the LLM prompt to guide decisions
+- Skill proficiency tracking (High/Medium/Low) with visual indicators
+
 ### API Access
 - Sanctum-protected REST API for programmatic access
 - Manage API tokens from the API Keys page
@@ -84,15 +90,20 @@ List your conversations with messages.
 - `User` - Standard auth with admin flag
 - `Conversation` - Belongs to user, has many messages
 - `Message` - Stores user prompts and assistant responses; assistant messages include `model` field
+- `Team` - Departments/Groups within the org
+- `TeamMember` - Staff members, belongs to Team (includes `route_guidance`)
+- `MemberSkill` - Specific skills linked to members (uses `SkillLevel` enum)
 
 ### Key Files
-- `config/ticky.php` - Org chart, default LLM model, model choices, token limits
-- `App\Services\LlmService` - Provider-agnostic LLM calls via Prism
+- `config/ticky.php` - Default LLM model, model choices, token limits (Org chart moved to DB)
+- `App\Services\LlmService` - Provider-agnostic LLM calls, injects dynamic org chart
 - `resources/views/prompts/triage.blade.php` - System prompt for triage
+- `App\Enums\SkillLevel.php` - Enum for skill levels (Low, Medium, High)
 
 ### Livewire Components
 - `TriageChat` - Ticket submission with model picker
 - `HomePage` - Conversation list with search and detail modal
+- `OrgChartPage` - Team/Member management with filtering and editing
 - `ApiTokens` - Token management
 
 ## Development
