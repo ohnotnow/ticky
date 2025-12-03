@@ -90,3 +90,35 @@ it('filters conversations by message content', function (): void {
         ->assertDontSee('Printer jam')
         ->assertViewHas('conversations', fn ($paginator) => $paginator->total() === 1);
 });
+
+it('can retry a conversation', function () {
+    $user = User::factory()->create();
+    $conversation = Conversation::factory()->create(['user_id' => $user->id]);
+    Message::factory()->create([
+        'conversation_id' => $conversation->id,
+        'user_id' => $user->id,
+        'content' => 'My printer is broken',
+    ]);
+    Message::factory()->create([
+        'conversation_id' => $conversation->id,
+        'user_id' => null,
+        'content' => json_encode(['recommendations' => []]),
+        'model' => 'old-model',
+    ]);
+
+    $this->actingAs($user);
+
+    $this->mock(App\Services\LlmService::class, function ($mock) {
+        $mock->shouldReceive('generateResponse')
+            ->once()
+            ->andReturn(['text' => json_encode(['recommendations' => [['team' => 'New Team']]]), 'model' => 'new-model']);
+    });
+
+    Livewire::test(HomePage::class)
+        ->call('retryConversation', $conversation->id)
+        ->assertSet('showConversation', true);
+
+    // Verify database state
+    expect($conversation->fresh()->messages)->toHaveCount(2);
+    expect($conversation->messages()->whereNull('user_id')->first()->model)->toBe('new-model');
+});

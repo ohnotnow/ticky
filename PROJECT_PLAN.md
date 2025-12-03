@@ -24,6 +24,7 @@ Built with Laravel 12, Livewire 3, and Flux UI.
 - Search by message content
 - Admins can toggle to view all users' conversations
 - Flyout modal shows full conversation with parsed recommendations
+- **Re-roll Triage**: Re-process existing triage recommendations for a conversation with updated Org Chart context. Accessible via a button in the conversation detail modal.
 
 ### Org Chart Management (`/org-chart`)
 - View and manage the organisation structure (Teams, Members, Skills)

@@ -130,6 +130,15 @@
                             title="Download JSON"
                         >
                         </flux:button>
+
+                        <flux:button
+                            wire:click="retryConversation({{ $activeConversation->id }})"
+                            variant="subtle"
+                            icon="arrow-path"
+                            class="cursor-pointer"
+                            title="Retry / Re-roll"
+                        >
+                        </flux:button>
                     @endif
                 </div>
                 <flux:modal.close>
