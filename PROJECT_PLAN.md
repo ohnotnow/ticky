@@ -30,7 +30,9 @@ Built with Laravel 12, Livewire 3, and Flux UI.
 ### Org Chart Management (`/org-chart`)
 - View and manage the organisation structure (Teams, Members, Skills)
 - Filter members by name or specific team
-- **Steerability**: Edit specific "Routing Guidance" notes for members (e.g. "Only handles physical hardware") which are injected into the LLM prompt to guide decisions
+- **Steerability**: Edit specific "Routing Guidance" notes for both teams and individual members which are injected into the LLM prompt to guide decisions
+  - Team-level guidance (e.g. "Only route here for infrastructure-level changes, not day-to-day user issues")
+  - Member-level guidance (e.g. "Only handles physical hardware")
 - Skill proficiency tracking (High/Medium/Low) with visual indicators
 - Guidance text truncated in table view with full text on hover
 
@@ -93,7 +95,7 @@ List your conversations with messages.
 - `User` - Standard auth with admin flag
 - `Conversation` - Belongs to user, has many messages
 - `Message` - Stores user prompts and assistant responses; assistant messages include `model` field
-- `Team` - Departments/Groups within the org
+- `Team` - Departments/Groups within the org (includes `route_guidance`)
 - `TeamMember` - Staff members, belongs to Team (includes `route_guidance`)
 - `MemberSkill` - Specific skills linked to members (uses `SkillLevel` enum)
 
@@ -119,6 +121,9 @@ php artisan db:seed --class=TestDataSeeder
 Seeds an admin user (`admin2x@example.com` / `secret`) along with:
 
 - **Realistic org chart** (5 teams, 32 members) with explicit skill levels
+- **Route guidance at team level** demonstrating when to route to each team, e.g.:
+  - Infrastructure: "Only for infrastructure-level changes, not day-to-day user issues"
+  - Service Delivery: "This is the DEFAULT team for most tickets"
 - **Route guidance for every member** demonstrating nuanced routing, e.g.:
   - Callum (networking expert): "WiFi issues and VPN client problems go to Service Delivery"
   - Ewan (AD expert): "Day-to-day password resets go to Service Delivery"
