@@ -1,6 +1,6 @@
 <div class="p-6 space-y-8 max-w-7xl mx-auto">
     <div>
-        <flux:heading size="xl">Organisation Chart</flux:heading>
+        <flux:heading size="xl">Teams and Members</flux:heading>
         <flux:text>Manage teams, members, and routing guidance for the triage assistant.</flux:text>
     </div>
 

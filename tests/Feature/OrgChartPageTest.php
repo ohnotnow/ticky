@@ -43,7 +43,7 @@ it('shows teams with members and skills and includes empty teams when not filter
     ]);
 
     Livewire::test(OrgChartPage::class)
-        ->assertSee('Organisation Chart')
+        ->assertSee('Teams and Members')
         ->assertSee($networkTeam->name)
         ->assertSee('Networking (High)')
         ->assertSee('Handles networking escalations')
