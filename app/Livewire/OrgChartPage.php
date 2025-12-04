@@ -17,6 +17,12 @@ class OrgChartPage extends Component
 
     public $editingMemberGuidance = '';
 
+    public $editingTeamId = null;
+
+    public $editingTeamName = '';
+
+    public $editingTeamGuidance = '';
+
     public $search = '';
 
     public $selectedTeamId = '';
@@ -64,5 +70,31 @@ class OrgChartPage extends Component
         Flux::toast('Member updated successfully.');
 
         Flux::modal('edit-member')->close();
+    }
+
+    public function editTeam(Team $team)
+    {
+        $this->editingTeamId = $team->id;
+        $this->editingTeamName = $team->name;
+        $this->editingTeamGuidance = $team->route_guidance;
+
+        Flux::modal('edit-team')->show();
+    }
+
+    public function saveTeam()
+    {
+        $this->validate([
+            'editingTeamGuidance' => 'nullable|string|max:1000',
+        ]);
+
+        $team = Team::findOrFail($this->editingTeamId);
+
+        $team->update([
+            'route_guidance' => $this->editingTeamGuidance,
+        ]);
+
+        Flux::toast('Team updated successfully.');
+
+        Flux::modal('edit-team')->close();
     }
 }

@@ -128,3 +128,82 @@ it('validates routing guidance length when saving a member', function (): void {
 
     expect($member->refresh()->route_guidance)->toBe('Existing guidance');
 });
+
+it('displays team routing guidance when set', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    $teamWithGuidance = Team::factory()->create([
+        'name' => 'Infrastructure',
+        'route_guidance' => 'Only for infrastructure-level issues',
+    ]);
+
+    TeamMember::factory()->for($teamWithGuidance)->create();
+
+    $teamWithoutGuidance = Team::factory()->create([
+        'name' => 'Service Desk',
+        'route_guidance' => null,
+    ]);
+
+    TeamMember::factory()->for($teamWithoutGuidance)->create();
+
+    Livewire::test(OrgChartPage::class)
+        ->assertSee('Only for infrastructure-level issues')
+        ->assertSee('Infrastructure')
+        ->assertSee('Service Desk');
+});
+
+it('loads and saves team routing guidance while dispatching modal and toast events', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    $team = Team::factory()->create([
+        'name' => 'Research Computing',
+        'route_guidance' => 'Old team guidance',
+    ]);
+
+    Livewire::test(OrgChartPage::class)
+        ->call('editTeam', $team->id)
+        ->assertSet('editingTeamId', $team->id)
+        ->assertSet('editingTeamName', $team->name)
+        ->assertSet('editingTeamGuidance', 'Old team guidance')
+        ->assertDispatched('modal-show', name: 'edit-team')
+        ->set('editingTeamGuidance', 'Only for HPC and research support')
+        ->call('saveTeam')
+        ->assertDispatched('toast-show', function (string $event, array $params): bool {
+            return ($params['slots']['text'] ?? null) === 'Team updated successfully.';
+        })
+        ->assertDispatched('modal-close', name: 'edit-team');
+
+    expect($team->refresh()->route_guidance)->toBe('Only for HPC and research support');
+});
+
+it('validates routing guidance length when saving a team', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    $team = Team::factory()->create([
+        'route_guidance' => 'Existing team guidance',
+    ]);
+
+    Livewire::test(OrgChartPage::class)
+        ->set('editingTeamId', $team->id)
+        ->set('editingTeamGuidance', str_repeat('a', 1001))
+        ->call('saveTeam')
+        ->assertHasErrors(['editingTeamGuidance' => 'max']);
+
+    expect($team->refresh()->route_guidance)->toBe('Existing team guidance');
+});
+
+it('can clear team routing guidance by setting it to empty', function (): void {
+    $this->actingAs(User::factory()->create());
+
+    $team = Team::factory()->create([
+        'route_guidance' => 'Some guidance to clear',
+    ]);
+
+    Livewire::test(OrgChartPage::class)
+        ->call('editTeam', $team->id)
+        ->set('editingTeamGuidance', '')
+        ->call('saveTeam')
+        ->assertHasNoErrors();
+
+    expect($team->refresh()->route_guidance)->toBeEmpty();
+});

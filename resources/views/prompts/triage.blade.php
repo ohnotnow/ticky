@@ -7,6 +7,9 @@ Your task is to read the support ticket below and recommend which team and/or pe
 @foreach($teams as $team)
 ### {{ $team->name }}
 {{ $team->description }}
+@if($team->route_guidance)
+Routing Guidance: {{ $team->route_guidance }}
+@endif
 
 Team members:
 @foreach($team->members as $member)

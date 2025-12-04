@@ -48,6 +48,7 @@ class TestDataSeeder extends Seeder
             $team = Team::create([
                 'name' => $teamData['team'],
                 'description' => $teamData['description'],
+                'route_guidance' => $teamData['route_guidance'] ?? null,
             ]);
 
             foreach ($teamData['members'] as $memberData) {
@@ -75,6 +76,7 @@ class TestDataSeeder extends Seeder
             [
                 'team' => 'College Infrastructure',
                 'description' => 'Core IT infrastructure including Active Directory, Windows/Linux servers, networking, firewalls, and security compliance.',
+                'route_guidance' => 'Only route tickets here when they involve infrastructure-level changes (server provisioning, firewall rules, AD architecture). Day-to-day user issues like password resets, VPN problems, and WiFi troubleshooting should go to Service Delivery first.',
                 'members' => [
                     [
                         'name' => 'Ewan MacLeod',
@@ -130,6 +132,7 @@ class TestDataSeeder extends Seeder
             [
                 'team' => 'Research Computing',
                 'description' => 'High-performance computing, research storage, scientific software, and support for computational research projects.',
+                'route_guidance' => 'Only for HPC cluster issues, scientific software, research data storage, and computational research support. General IT queries from researchers (laptop issues, email problems) should still go to Service Delivery.',
                 'members' => [
                     [
                         'name' => 'Dr Alistair Kerr',
@@ -306,6 +309,7 @@ class TestDataSeeder extends Seeder
             [
                 'team' => 'Service Delivery',
                 'description' => 'Front-line IT support, device deployment, end-user assistance, AV equipment, and day-to-day technical queries across the College.',
+                'route_guidance' => 'This is the DEFAULT team for most tickets. When in doubt, route here. They handle initial triage and will escalate to specialist teams if needed. Most end-user issues should come here first.',
                 'members' => [
                     [
                         'name' => 'Shona MacKenzie',

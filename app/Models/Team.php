@@ -13,6 +13,7 @@ class Team extends Model
     protected $fillable = [
         'name',
         'description',
+        'route_guidance',
     ];
 
     public function members(): HasMany

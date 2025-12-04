@@ -19,6 +19,7 @@ class TeamFactory extends Factory
         return [
             'name' => fake()->unique()->company(),
             'description' => fake()->sentence(),
+            'route_guidance' => fake()->optional()->sentence(),
         ];
     }
 }

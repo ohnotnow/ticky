@@ -16,10 +16,16 @@
     </div>
 
     @foreach($teams as $team)
-        <flux:card class="space-y-4">
-            <div>
-                <flux:heading size="lg">{{ $team->name }}</flux:heading>
-                <flux:text>{{ $team->description }}</flux:text>
+        <flux:card class="space-y-4" wire:key="team-{{ $team->id }}">
+            <div class="flex justify-between items-start gap-4">
+                <div class="flex-1">
+                    <flux:heading size="lg">{{ $team->name }}</flux:heading>
+                    <flux:text>{{ $team->description }}</flux:text>
+                    @if($team->route_guidance)
+                        <flux:text class="mt-2 italic">Routing Guidance: {{ $team->route_guidance }}</flux:text>
+                    @endif
+                </div>
+                <flux:button wire:click="editTeam({{ $team->id }})" size="sm" variant="ghost" icon="pencil-square" class="cursor-pointer" />
             </div>
 
             <flux:table>
@@ -80,6 +86,24 @@
             <div class="flex">
                 <flux:spacer />
                 <flux:button wire:click="saveMember" variant="primary">Save changes</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="edit-team" class="md:w-96" flyout>
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Edit Team</flux:heading>
+                <flux:text class="mt-2">Update routing guidance for this team.</flux:text>
+            </div>
+
+            <flux:input label="Name" value="{{ $editingTeamName }}" disabled class="w-full" />
+
+            <flux:textarea wire:model="editingTeamGuidance" label="Routing Guidance" description="Add specific notes to help the AI understand when tickets should or should not be routed to this team." rows="4" />
+
+            <div class="flex">
+                <flux:spacer />
+                <flux:button wire:click="saveTeam" variant="primary">Save changes</flux:button>
             </div>
         </div>
     </flux:modal>
