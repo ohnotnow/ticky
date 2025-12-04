@@ -16,9 +16,20 @@
             />
         </div>
 
-        <flux:button tag="a" href="{{ route('triage') }}" variant="primary" icon="paper-airplane" wire:navigate class="cursor-pointer">
-            Triage ticket
-        </flux:button>
+        @if (count($selectedConversationIds) > 0)
+            <div class="flex items-center gap-2">
+                <flux:button wire:click="bulkRetryConversations" variant="primary" icon="arrow-path" class="cursor-pointer">
+                    Re-roll {{ count($selectedConversationIds) }} {{ Str::plural('conversation', count($selectedConversationIds)) }}
+                </flux:button>
+                <flux:button wire:click="clearSelection" variant="subtle" icon="x-mark" class="cursor-pointer">
+                    Clear
+                </flux:button>
+            </div>
+        @else
+            <flux:button tag="a" href="{{ route('triage') }}" variant="primary" icon="paper-airplane" wire:navigate class="cursor-pointer">
+                Triage ticket
+            </flux:button>
+        @endif
     </div>
 
     <flux:separator class="my-4" />
@@ -38,8 +49,15 @@
                     wire:click="openConversation({{ $conversation->id }})"
                     wire:key="conversation-{{ $conversation->id }}"
                 >
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="space-y-1">
+                    <div class="flex items-start gap-3">
+                        <div wire:click.stop class="pt-1">
+                            <flux:checkbox
+                                wire:model.live="selectedConversationIds"
+                                value="{{ $conversation->id }}"
+                                class="cursor-pointer"
+                            />
+                        </div>
+                        <div class="flex-1 space-y-1">
                             <div class="flex justify-between items-center gap-2">
                                 <flux:badge variant="pill">
                                     {{ $conversation->created_at->diffForHumans() }}

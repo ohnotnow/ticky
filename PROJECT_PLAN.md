@@ -25,6 +25,7 @@ Built with Laravel 12, Livewire 3, and Flux UI.
 - Admins can toggle to view all users' conversations
 - Flyout modal shows full conversation with parsed recommendations
 - **Re-roll Triage**: Re-process existing triage recommendations for a conversation with updated Org Chart context. Accessible via a button in the conversation detail modal.
+- **Bulk Re-roll**: Select multiple conversations via checkboxes and re-roll them all at once. Useful after updating team member routing guidance.
 
 ### Org Chart Management (`/org-chart`)
 - View and manage the organisation structure (Teams, Members, Skills)

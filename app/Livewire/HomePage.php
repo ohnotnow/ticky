@@ -31,6 +31,9 @@ class HomePage extends Component
     /** @var array<int, array<string, mixed>> */
     public array $activeMessages = [];
 
+    /** @var array<int, int> */
+    public array $selectedConversationIds = [];
+
     public function boot(LlmService $llmService): void
     {
         $this->llmService = $llmService;
@@ -91,6 +94,38 @@ class HomePage extends Component
         ]);
 
         $this->openConversation($conversation->id);
+    }
+
+    public function clearSelection(): void
+    {
+        $this->selectedConversationIds = [];
+    }
+
+    public function bulkRetryConversations(): void
+    {
+        if (empty($this->selectedConversationIds)) {
+            return;
+        }
+
+        $conversations = Conversation::query()
+            ->whereIn('id', $this->selectedConversationIds)
+            ->when(! $this->showAll, fn ($query) => $query->where('user_id', Auth::id()))
+            ->get();
+
+        foreach ($conversations as $conversation) {
+            $conversation->messages()->whereNull('user_id')->delete();
+            $conversation->refresh();
+            $conversation->load('messages');
+
+            $llmResponse = $this->llmService->generateResponse($conversation);
+
+            $conversation->messages()->create([
+                'content' => $llmResponse['text'],
+                'model' => $llmResponse['model'],
+            ]);
+        }
+
+        $this->clearSelection();
     }
 
     public function updatingFilter(): void

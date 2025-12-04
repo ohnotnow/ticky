@@ -122,3 +122,110 @@ it('can retry a conversation', function () {
     expect($conversation->fresh()->messages)->toHaveCount(2);
     expect($conversation->messages()->whereNull('user_id')->first()->model)->toBe('new-model');
 });
+
+it('can clear selection', function () {
+    $user = User::factory()->create();
+    $conversation = Conversation::factory()->create(['user_id' => $user->id]);
+
+    $this->actingAs($user);
+
+    Livewire::test(HomePage::class)
+        ->set('selectedConversationIds', [$conversation->id])
+        ->assertSet('selectedConversationIds', [$conversation->id])
+        ->call('clearSelection')
+        ->assertSet('selectedConversationIds', []);
+});
+
+it('can bulk re-roll selected conversations', function () {
+    $user = User::factory()->create();
+
+    $conversation1 = Conversation::factory()->create(['user_id' => $user->id]);
+    Message::factory()->create([
+        'conversation_id' => $conversation1->id,
+        'user_id' => $user->id,
+        'content' => 'Printer issue',
+    ]);
+    Message::factory()->create([
+        'conversation_id' => $conversation1->id,
+        'user_id' => null,
+        'content' => json_encode(['recommendations' => []]),
+        'model' => 'old-model',
+    ]);
+
+    $conversation2 = Conversation::factory()->create(['user_id' => $user->id]);
+    Message::factory()->create([
+        'conversation_id' => $conversation2->id,
+        'user_id' => $user->id,
+        'content' => 'VPN issue',
+    ]);
+    Message::factory()->create([
+        'conversation_id' => $conversation2->id,
+        'user_id' => null,
+        'content' => json_encode(['recommendations' => []]),
+        'model' => 'old-model',
+    ]);
+
+    $llmResponse = '{"recommendations":[{"team":"New Team","person":"Someone","confidence":8,"reasoning":"Re-rolled"}]}';
+
+    Prism\Prism\Facades\Prism::fake([
+        Prism\Prism\Testing\TextResponseFake::make()->withText($llmResponse),
+        Prism\Prism\Testing\TextResponseFake::make()->withText($llmResponse),
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(HomePage::class)
+        ->set('selectedConversationIds', [$conversation1->id, $conversation2->id])
+        ->call('bulkRetryConversations')
+        ->assertSet('selectedConversationIds', []);
+
+    expect($conversation1->fresh()->messages)->toHaveCount(2);
+    expect($conversation1->messages()->whereNull('user_id')->first()->content)->toBe($llmResponse);
+
+    expect($conversation2->fresh()->messages)->toHaveCount(2);
+    expect($conversation2->messages()->whereNull('user_id')->first()->content)->toBe($llmResponse);
+});
+
+it('cannot bulk re-roll other users conversations when showAll is false', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+
+    $ownConversation = Conversation::factory()->create(['user_id' => $user->id]);
+    Message::factory()->create([
+        'conversation_id' => $ownConversation->id,
+        'user_id' => $user->id,
+        'content' => 'My issue',
+    ]);
+
+    $otherConversation = Conversation::factory()->create(['user_id' => $otherUser->id]);
+    Message::factory()->create([
+        'conversation_id' => $otherConversation->id,
+        'user_id' => $otherUser->id,
+        'content' => 'Their issue',
+    ]);
+    Message::factory()->create([
+        'conversation_id' => $otherConversation->id,
+        'user_id' => null,
+        'content' => json_encode(['recommendations' => []]),
+        'model' => 'original-model',
+    ]);
+
+    $llmResponse = '{"recommendations":[{"team":"New Team","person":"Someone","confidence":8,"reasoning":"Re-rolled"}]}';
+
+    Prism\Prism\Facades\Prism::fake([
+        Prism\Prism\Testing\TextResponseFake::make()->withText($llmResponse),
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(HomePage::class)
+        ->set('selectedConversationIds', [$ownConversation->id, $otherConversation->id])
+        ->call('bulkRetryConversations');
+
+    // Own conversation should have new assistant message
+    expect($ownConversation->fresh()->messages)->toHaveCount(2);
+    expect($ownConversation->messages()->whereNull('user_id')->first()->content)->toBe($llmResponse);
+
+    // Other user's conversation should remain unchanged
+    expect($otherConversation->fresh()->messages()->whereNull('user_id')->first()->model)->toBe('original-model');
+});
